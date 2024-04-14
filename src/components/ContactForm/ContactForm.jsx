@@ -1,18 +1,29 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import { nanoid } from "nanoid";
 import css from "../ContactForm/ContactForm.module.css";
+
+const phoneRegex = RegExp(/^\d{3}-\d{2}-\d{2}$/);
 
 const UserSchema = Yup.object().shape({
   username: Yup.string()
     .min(3, "Too short")
     .max(50, "Too large")
-    .required("Required"),
-  phone: Yup.number().min(9, "Too short").required("Required"),
+    .required("required"),
+  phone: Yup.string()
+    .matches(phoneRegex, "Nummer format: 000-00-00")
+    .required("required"),
 });
 
-export default function ContactForm() {
+export default function ContactForm({ onAdd }) {
   const handleSubmit = (values, action) => {
-    console.log("handleSubmit", values);
+    const { username, phone } = values;
+    const id = nanoid();
+    onAdd({
+      name: username,
+      number: phone,
+      id: id,
+    });
     action.resetForm();
   };
 
